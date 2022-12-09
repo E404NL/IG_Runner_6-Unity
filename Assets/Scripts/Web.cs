@@ -10,8 +10,9 @@ public class Web : MonoBehaviour
     void Start()
     {
         StartCoroutine(GetTimer());
-        StartCoroutine(GetUsers());
-        StartCoroutine(Login("TheDev", "uchtxc!"));
+        //StartCoroutine(GetUsers());
+        //StartCoroutine(Login("TheDev", "uchtxc!"));
+        //StartCoroutine(RegisterUser("FirstRegister", "bw4bw0hbwIh", "zalut.zava@gmou.con", "Prenom", "nom"));
     }
 
     IEnumerator GetTimer()
@@ -58,8 +59,30 @@ public class Web : MonoBehaviour
         using (UnityWebRequest www = UnityWebRequest.Post("http://localhost/UnityBackend/unity_back_php/Login.php", form))
         {
             yield return www.SendWebRequest();
-
             if(www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                Debug.Log(www.downloadHandler.text);
+            }
+        }
+    }
+
+    IEnumerator RegisterUser(string username, string password, string email, string firstName, string lastName)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("loginUser", username);
+        form.AddField("loginPass", password);
+        form.AddField("loginEmail", email);
+        form.AddField("loginFirstName", firstName);
+        form.AddField("loginLastName", lastName);
+
+        using (UnityWebRequest www = UnityWebRequest.Post("http://localhost/UnityBackend/unity_back_php/RegisterUser.php", form))
+        {
+            yield return www.SendWebRequest();
+            if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);
             }
@@ -73,6 +96,6 @@ public class Web : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }
