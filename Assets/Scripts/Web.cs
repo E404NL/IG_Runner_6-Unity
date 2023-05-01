@@ -6,6 +6,10 @@ using UnityEngine.Networking;
 
 public class Web : MonoBehaviour
 {
+
+    // public InputField usernameInput;
+    // public InputField passwordInput;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -13,6 +17,7 @@ public class Web : MonoBehaviour
         //StartCoroutine(GetUsers());
         //StartCoroutine(Login("TheDev", "uchtxc!"));
         //StartCoroutine(RegisterUser("FirstRegister", "bw4bw0hbwIh", "zalut.zava@gmou.con", "Prenom", "nom"));
+        //startCoroutine(LoginWithInputField();)
     }
 
     IEnumerator GetTimer()
@@ -50,11 +55,11 @@ public class Web : MonoBehaviour
         }
     }
 
-    IEnumerator Login(string username, string password)
+    IEnumerator Login(string _username, string _password)
     {
         WWWForm form = new WWWForm();
-        form.AddField("loginUser", username);
-        form.AddField("loginPass", password);
+        form.AddField("loginUser", _username);
+        form.AddField("loginPass", _password);
 
         using (UnityWebRequest www = UnityWebRequest.Post("http://localhost/UnityBackend/unity_back_php/Login.php", form))
         {
@@ -69,6 +74,26 @@ public class Web : MonoBehaviour
             }
         }
     }
+
+    // IEnumerator LoginWithInputField()
+    // {
+    //     WWWForm form = new WWWForm();
+    //     form.AddField("loginUser", usernameInput.text);
+    //     form.AddField("loginPass", passwordInput.text);
+
+    //     using (UnityWebRequest www = UnityWebRequest.Post("http://localhost/UnityBackend/unity_back_php/Login.php", form))
+    //     {
+    //         yield return www.SendWebRequest();
+    //         if(www.isNetworkError || www.isHttpError)
+    //         {
+    //             Debug.Log(www.error);
+    //         }
+    //         else
+    //         {
+    //             Debug.Log(www.downloadHandler.text);
+    //         }
+    //     }
+    // }
 
     IEnumerator RegisterUser(string username, string password, string email, string firstName, string lastName)
     {

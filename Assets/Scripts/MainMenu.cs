@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    public string LevelToLoad;  //nom de la scène de jeu
+    public string LevelToLoad;  //nom de la scï¿½ne de jeu
 
     public GameObject settingsWindow;   //fenetre des options
     public GameObject creditsWindow;    //fenetre des credits
@@ -13,6 +13,7 @@ public class MainMenu : MonoBehaviour
     {
         SceneManager.LoadScene(LevelToLoad);
     }
+
     public void Settings()      //ouvre la fenetre des options
     {
         settingsWindow.SetActive(true);
