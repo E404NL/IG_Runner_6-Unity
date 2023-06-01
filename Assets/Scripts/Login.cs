@@ -7,46 +7,45 @@ using UnityEngine.Networking;
 
 public class Login : MonoBehaviour
 {
-    public string SceneToLoad;  //nom de la sc�ne de jeu
     public InputField usernameInput;    // champ de texte username
     public InputField passwordInput;    // champ de texte password
-    public GameObject settingsWindow;   //fenetre des options
+    public MainMenu menu;
 
-    IEnumerator LoginWithInputField()
+    public void Start()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("loginUser", usernameInput.text);
-        form.AddField("loginPass", passwordInput.text);
 
-        using (UnityWebRequest www = UnityWebRequest.Post("http://localhost/UnityBackend/unity_back_php/Login.php", form))
+        passwordInput.contentType = InputField.ContentType.Password;
+    }
+
+
+    public void SignInButtonClicked()
+    {
+        string url = "http://localhost:8080/ws/users/" + usernameInput.text +"/"+ passwordInput.text; // URL de l'endpoint pour récupérer un utilisateur par son ID
+
+        UnityWebRequest request = UnityWebRequest.Get(url);
+
+        var asyncOperation = request.SendWebRequest();
+        asyncOperation.completed += OnRequestGetUser;
+    }
+
+    public void OnRequestGetUser(AsyncOperation operation)
+    {
+        UnityWebRequest request = ((UnityWebRequestAsyncOperation)operation).webRequest;
+
+        if (request.result == UnityWebRequest.Result.Success)
         {
-            yield return www.SendWebRequest();
-            if(www.isNetworkError || www.isHttpError)
-            {
-                Debug.Log(www.error);
-            }
-            else
-            {
-                Debug.Log(www.downloadHandler.text);
-                SceneManager.LoadScene(SceneToLoad);
-            }
+            string responseJson = request.downloadHandler.text;
+            UserData user = new UserData(JsonUtility.FromJson<UserData>(responseJson));
+            Debug.Log("Got User ID :" + user.Username);
+            Debug.Log("Statistics ID : " + user.Statistics.Id);
+
+            UserAccess.instance.user = user;
+            menu.CloseConnection();
+            menu.connected = true;
+        }
+        else
+        {
+            Debug.LogError("Error when try to get User : " + request.error);
         }
     }
-
-
-    public void Quit()          //ferme le jeu
-    {
-        Application.Quit();
-    }
-
-    public void Settings()      //ouvre la fenetre des options
-    {
-        settingsWindow.SetActive(true);
-    }
-
-    public void CloseSettings() //ferme la fenetre des options
-    {
-        settingsWindow.SetActive(false);
-    }
-
 }

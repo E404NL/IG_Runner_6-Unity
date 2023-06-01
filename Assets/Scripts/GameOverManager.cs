@@ -5,7 +5,6 @@ public class GameOverManager : MonoBehaviour
 {
 
     public GameObject gameOverUI;   //GameOverMenu
-
     public static GameOverManager instance; //instance
 
     private void Awake()

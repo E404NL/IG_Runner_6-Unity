@@ -14,16 +14,16 @@ public class Coin : MonoBehaviour
             return;
         }
 
-        if (other.gameObject.name != "Player")      //Check que l'objet est collided avec le joueur
+        if (other.gameObject.name != "Player")
         {
-            return;     //non : rien
+            return;
         }
         else if (other.gameObject.name == "Player")
         {
-            Destroy(gameObject);        //oui : détruire l'objet pièce
+            Destroy(gameObject);
         }
 
-        GameManager.inst.IncrementScore(); //appel de la méthode d'incrémentation de score du joueur
+        GameManager.inst.IncrementScore();
     }
 
     // Start is called before the first frame update
