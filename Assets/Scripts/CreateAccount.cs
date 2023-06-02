@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 using System.IO;
 
 
@@ -16,54 +18,219 @@ public class CreateAccount : MonoBehaviour
     public InputField nameField;
     public InputField firstnameField;
     public InputField ageField;
-    public InputField sexField;
+    public InputField genreField;
     public InputField codePostalField;
     public Image usernameFieldImage;
     public Image passwordFieldImage;
     public Image passwordConfirmationImage;
     public Image emailFieldImage;
+    public Image codePostalFieldImage;
+    public Image ageFieldImage;
+    public Text UsernameText;
+    public Text PasswordText;
+    public Text PasswordConfirmationText;
+    public Text EmailText;
+    public Text AgeText;
+    public Text CodePostalText;
+    public Toggle Male;
+    public Toggle Female;
+    public Toggle Other;
+    public Button SignUp;
+    private Dictionary<string,bool> isgoods = new Dictionary<string,bool>();
+    
 
     private const string serverURL = "http://localhost:8080/ws/users";
 
     private void Start()
     {
+        isgoods["Username"] = false;
+        isgoods["Password"] = false;    //false
+        isgoods["PasswordConfirmation"] = false;
+        isgoods["Email"] = false;
+        isgoods["Name"] = false;    //false
+        isgoods["FirstName"] = false;   //false 
+        isgoods["Age"] = false;
+        isgoods["Genre"] = false;
+        isgoods["PostalCode"] = false;
+
         emailField.onEndEdit.AddListener(CheckEmailAvailability);
         passwordField.contentType = InputField.ContentType.Password;
+        passwordField.onValueChanged.AddListener(verifyPasswordLevel);
         passwordConfirmationField.contentType = InputField.ContentType.Password;
         usernameField.onEndEdit.AddListener(CheckUsernameAvailability);
-        passwordConfirmationField.onEndEdit.AddListener(verifyPassWord);
+        passwordConfirmationField.onEndEdit.AddListener(verifySamePassWord);
+        codePostalField.onEndEdit.AddListener(checkPostalCode);
+        ageField.onEndEdit.AddListener(checkAge);
+        Male.onValueChanged.AddListener(checkGenre);
+        Female.onValueChanged.AddListener(checkGenre);
+        Other.onValueChanged.AddListener(checkGenre);
     }
 
     private void Update()
     {
-        
+        SignUp.interactable = CheckIfCanSignUp();
     }
 
     private void OnDisable()
     {
+        passwordField.onEndEdit.RemoveAllListeners();
         emailField.onEndEdit.RemoveListener(CheckEmailAvailability);
         usernameField.onEndEdit.RemoveListener(CheckUsernameAvailability);
-        passwordConfirmationField.onEndEdit.RemoveListener(verifyPassWord);
+        passwordConfirmationField.onEndEdit.RemoveListener(verifySamePassWord);
+        codePostalField.onEndEdit.RemoveListener(checkPostalCode);
+        ageField.onEndEdit.RemoveListener(checkAge);
+        Male.onValueChanged.RemoveListener(checkGenre);
+        Female.onValueChanged.RemoveListener(checkGenre);
+        Other.onValueChanged.RemoveListener(checkGenre);
     }
 
 
-
-    public void verifyPassWord(string password)
+    public void verifySamePassWord(string password)
     {
         if(passwordField.text == passwordConfirmationField.text)
         {
-            passwordConfirmationImage.color = Color.green;
-            passwordFieldImage.color = Color.green;
+            passwordConfirmationImage.color = Color.white;
+            passwordFieldImage.color = Color.white;
+            PasswordConfirmationText.text = "";
+            isgoods["PasswordConfirmation"] = true;
+            PrintIsGood();
         }
         else
         {
             passwordConfirmationImage.color = Color.red;
             passwordFieldImage.color = Color.red;
+            PasswordConfirmationText.text = "Mot de passe différent !"; 
+            isgoods["PasswordConfirmation"] = false;
+            PrintIsGood();
+        }
+    }
+
+    public void verifyPasswordLevel(string password)
+    {
+        Regex regex = new Regex("/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/");
+        if (regex.IsMatch(passwordField.text))
+        {
+            passwordFieldImage.color = Color.white;
+            PasswordText.text = "";
+            isgoods["Password"] = true;
+            PrintIsGood();
+        }
+        else
+        {
+            passwordFieldImage.color = Color.red;
+            PasswordText.text = "Mot de passe faible : nécessite 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial !";
+            isgoods["Password"] = false;
+            PrintIsGood();
+        }
+    }
+
+    public void checkPostalCode(string code)
+    {
+        if(codePostalField.text.Length != 5)
+        {
+            codePostalFieldImage.color = Color.red;
+            CodePostalText.text = "Merci de mettre un code postal à 5 chiffres !";
+            isgoods["PostalCode"] = false;
+            PrintIsGood();
+        }
+        else
+        {
+            codePostalFieldImage.color = Color.white;
+            CodePostalText.text = "";
+            isgoods["PostalCode"] = true;
+            PrintIsGood();
+        }
+    }
+
+    public void checkName(string name)
+    {
+        Regex regex = new Regex("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-\\s'][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
+        if (regex.IsMatch(nameField.text))
+        {
+            isgoods["Name"] = true;
+            PrintIsGood();
+        }
+        else
+        {
+            isgoods["Name"] = false;
+            PrintIsGood();
+        }
+    }
+
+    public void checkFirstName(string firstname)
+    {
+        Regex regex = new Regex("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-\\s'][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
+        if (regex.IsMatch(nameField.text))
+        {
+            isgoods["FirstName"] = true;
+            PrintIsGood();
+        }
+        else
+        {
+            isgoods["FirstName"] = false;
+            PrintIsGood();
+        }
+    }
+
+    public void checkAge(string age)
+    {
+        Regex regex = new Regex("^(1[3-9]|[2-8][0-9]|9[0-9])$");
+        if (regex.IsMatch(ageField.text) && (int.Parse(ageField.text) > 99 || int.Parse(ageField.text) < 13))
+        {
+            ageFieldImage.color = Color.red;
+            AgeText.text = "Merci d'entrer un âge compris entre 13 et 99 ans!";
+            isgoods["Age"] = false;
+            PrintIsGood();
+
+        }
+        else
+        {
+            ageFieldImage.color = Color.white;
+            AgeText.text = "";
+            isgoods["Age"] = true;
+            PrintIsGood();
+
+        }
+    }
+
+    public void checkGenre(bool isOn)
+    {
+        if(!Male.isOn && !Female.isOn && !Other.isOn)
+        {
+            isgoods["Genre"] = false;
+            PrintIsGood();
+        }
+        if(Male.isOn)
+        {
+            Female.isOn = false;
+            Other.isOn = false;
+            isgoods["Genre"] = true;
+            PrintIsGood();
+        }
+        if (Female.isOn)
+        {
+            Male.isOn = false;
+            Other.isOn = false;
+            isgoods["Genre"] = true;
+            PrintIsGood();
+        }
+        if (Other.isOn)
+        {
+            Female.isOn = false;
+            Male.isOn = false;
+            isgoods["Genre"] = true;
+            PrintIsGood();
         }
     }
 
     public void CheckUsernameAvailability(string username)
     {
+        if(usernameField.text == "")
+        {
+            UsernameText.text = "Merci d'entrer un pseudo !";
+            return;
+        }
+        UsernameText.text = "";
         // URL de l'endpoint pour vérifier l'existence d'un utilisateur
         string url = serverURL + "/check-username/" + usernameField.text;
         UnityWebRequest request = UnityWebRequest.Get(url);
@@ -86,11 +253,17 @@ public class CreateAccount : MonoBehaviour
             {
                 Debug.Log("This username's already taken!");
                 usernameFieldImage.color = Color.red;
+                UsernameText.text = "Ce pseudo est déjà pris!";
+                isgoods["Username"] = false;
+                PrintIsGood();
             }
             else
             {
                 Debug.Log("This username's already free.");
-                usernameFieldImage.color = Color.green;
+                usernameFieldImage.color = Color.white;
+                UsernameText.text = "";
+                isgoods["Username"] = true;
+                PrintIsGood();
             }
         }
         else
@@ -100,6 +273,15 @@ public class CreateAccount : MonoBehaviour
     }
     public void CheckEmailAvailability(string email)
     {
+        Regex regex = new Regex("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.+[a-zA-Z]{2,}$");
+        if (!regex.IsMatch(emailField.text))
+        {
+            emailFieldImage.color = Color.red;
+            EmailText.text = "Merci d'entrer une email valide !";
+            isgoods["Email"] = false;
+            PrintIsGood();
+            return;
+        }
         // URL de l'endpoint pour vérifier l'existence d'un utilisateur
         string url = serverURL + "/check-email/" + emailField.text;
         UnityWebRequest request = UnityWebRequest.Get(url);
@@ -121,16 +303,42 @@ public class CreateAccount : MonoBehaviour
             {
                 Debug.Log("This email's already taken!");
                 emailFieldImage.color = Color.red;
+                EmailText.text = "Cet adresse email est déjà prise !";
+                isgoods["Email"] = false;
+                PrintIsGood();
             }
             else
             {
                 Debug.Log("This email's already free.");
-                emailFieldImage.color = Color.green;
+                emailFieldImage.color = Color.white;
+                isgoods["Email"] = true;
+                PrintIsGood();
             }
         }
         else
         {
             Debug.LogError("Error in verifying email's already exist in DB : " + request.error);
+        }
+    }
+
+    public bool CheckIfCanSignUp()
+    {
+        bool ok = false;
+        foreach (bool value in isgoods.Values)
+        {
+            if (!value)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void PrintIsGood()
+    {
+        foreach (bool value in isgoods.Values)
+        {
+            Debug.Log(value);
         }
     }
 
@@ -144,12 +352,13 @@ public class CreateAccount : MonoBehaviour
             nameField.text,
             firstnameField.text,
             int.Parse(ageField.text),
-            sexField.text,
+            genreField.text,
             int.Parse(codePostalField.text)
         );
-
+        Debug.Log(user);
         // Convertir l'objet User en JSON
-        string jsonData = JsonUtility.ToJson(user);
+        string jsonData = JsonConvert.SerializeObject(user);
+        Debug.Log(jsonData);
 
         // Création de la requête POST avec le contenu JSON
         UnityWebRequest request = UnityWebRequest.Post(serverURL, jsonData);
@@ -158,7 +367,7 @@ public class CreateAccount : MonoBehaviour
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");
 
-        // Yeet la request
+
         var asyncOperation = request.SendWebRequest();
         asyncOperation.completed += OnRequestCompleted;
     }

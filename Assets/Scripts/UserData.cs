@@ -3,27 +3,33 @@
 
 using UnityEngine;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 
 [System.Serializable]
 public class UserData
 {
-    private long id;
-    private string username;
-    private string password;
-    private string email;
-    private string name;
-    private string firstname;
-    private int age;
-    private string gender;
-    private int codePostal;
-    private long rank;
-    private int tryCounter;
-    private string actualSkin;
-    private int totalScore;
-    private StatisticsData statistics;
-    private GrindData grind;
-    /*public SuccessData[] successes;*/
+    private long _id;
+    private string _username;
+    private string _password;
+    private string _email;
+    private string _name;
+    private string _firstname;
+    private int _age;
+    private string _gender;
+    private int _codePostal;
+    private long _rank;
+    private int _tryCounter;
+    private string _actualSkin;
+    private int _totalScore;
+    private StatisticsData _statistics;
+    private GrindData _grind;
+    /*public SuccessData[] _successes;*/
+
+    public UserData()
+    {
+
+    }
 
     public UserData(string username, string password, string email,
             string name, string firstname, int age, string gender, int codePostal)
@@ -45,117 +51,150 @@ public class UserData
 
     public UserData(UserData user)
     {
-        this.Id = user.Id;
-        this.Username = user.Username;
-        this.Password = user.Password;
-        this.Email = user.Email;
-        this.Name = user.Name;
-        this.Firstname = user.Firstname;
-        this.Age = user.Age;
-        this.Gender = user.Gender;
-        this.CodePostal = user.CodePostal;
-        this.Rank = user.Rank;
-        this.ActualSkin = user.ActualSkin;
-        this.TotalScore = user.TotalScore;
-        this.Statistics = user.Statistics;
-        this.Grind = user.Grind;
+        this.id = user.id;
+        this.username = user.username;
+        this.password = user.password;
+        this.email = user.email;
+        this.name = user.name;
+        this.firstname = user.firstname;
+        this.age = user.age;
+        this.gender = user.gender;
+        this.codePostal = user.codePostal;
+        this.rank = user.rank;
+        this.actualSkin = user.actualSkin;
+        this.totalScore = user.totalScore;
+        this.statistics = user.statistics;
+        this.grind = user.grind;
     }
 
-    public long Id
+    public long id
     {
-        get => id;
-        set => id = value;
+        get => _id;
+        set => _id = value;
     }
 
-    public string Username
+    public string username
     {
-        get => username;
-        set => username = value;
+        get => _username;
+        set => _username = value;
     }
 
-    public string Password
+    public string password
     {
-        get => password;
-        set => password = value;
+        get => _password;
+        set => _password = value;
     }
 
-    public string Email
+    public string email
     {
-        get => email;
-        set => email = value;
+        get => _email;
+        set => _email = value;
     }
 
-    public string Name
+    public string name
     {
-        get => name;
-        set => name = value;
+        get => _name;
+        set => _name = value;
     }
 
-    public string Firstname
+    public string firstname
     {
-        get => firstname;
-        set => firstname = value;
+        get => _firstname;
+        set => _firstname = value;
     }
 
-    public int Age
+    public int age
     {
-        get => age;
-        set => age = value;
+        get => _age;
+        set => _age = value;
     }
 
-    public string Gender
+    public string gender
     {
-        get => gender;
-        set => gender = value;
+        get => _gender;
+        set => _gender = value;
     }
 
-    public int CodePostal
+    public int codePostal
     {
-        get => codePostal;
-        set => codePostal = value;
+        get => _codePostal;
+        set => _codePostal = value;
     }
 
-    public long Rank
+    public long rank
     {
-        get => rank;
-        set => rank = value;
+        get => _rank;
+        set => _rank = value;
     }
 
-    public int TryCounter
+    public int tryCounter
     {
-        get => tryCounter;
-        set => tryCounter = value;
+        get => _tryCounter;
+        set => _tryCounter = value;
     }
 
-    public string ActualSkin
+    public string actualSkin
     {
-        get => actualSkin;
-        set => actualSkin = value;
+        get => _actualSkin;
+        set => _actualSkin = value;
     }
 
-    public int TotalScore
+    public int totalScore
     {
-        get => totalScore;
-        set => totalScore = value;
+        get => _totalScore;
+        set => _totalScore = value;
     }
 
-    public StatisticsData Statistics
+    public StatisticsData statistics
     {
-        get => statistics;
-        set => statistics = value;
+        get => _statistics;
+        set => _statistics = value;
     }
 
-    public GrindData Grind
+    public GrindData grind
     {
-        get => grind;
-        set => grind = value;
+        get => _grind;
+        set => _grind = value;
+    }
+
+    public void PostUser()  // A MODIFIER LE user
+    {
+        UserData user = new UserData();
+        const string serverURL = "http://localhost:8080/ws/users";
+        string jsonData = JsonConvert.SerializeObject(user);
+        Debug.Log(jsonData);
+
+        // Création de la requête POST avec le contenu JSON
+        UnityWebRequest request = UnityWebRequest.Post(serverURL, jsonData);
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+
+        var asyncOperation = request.SendWebRequest();
+        asyncOperation.completed += OnPostRequestCompleted;
+    }
+    private void OnPostRequestCompleted(AsyncOperation operation)
+    {
+        UnityWebRequest request = ((UnityWebRequestAsyncOperation)operation).webRequest;
+
+        if (request.result == UnityWebRequest.Result.ProtocolError)
+        {
+            Debug.LogError("Error in request : " + request.error + ".");
+        }
+        else
+        {
+            Debug.Log("Successfull sent request !");
+        }
     }
 
     public void UpdateUser()
     {
         string url = "http://localhost:8080/ws/users/" + this.id; // URL de l'endpoint pour récupérer un utilisateur par son ID
+        string jsonData = JsonConvert.SerializeObject(this);
 
-        UnityWebRequest request = UnityWebRequest.Get(url);
+        UnityWebRequest request = UnityWebRequest.Put(url, jsonData);
 
         var asyncOperation = request.SendWebRequest();
         asyncOperation.completed += OnRequestPutUser;
@@ -181,9 +220,9 @@ public class UserData
     {
         StatisticsData stats = this.statistics;
         GrindData grind = this.grind;
-        int success_points = grind.SuccessPoints;
-        float dist = stats.TotalDistance;
-        int coins = stats.TotalCoins;
+        int success_points = grind.successPoints;
+        float dist = stats.totalDistance;
+        int coins = stats.totalCoins;
         int totalScore = this.totalScore;
         if (success_points != 0)
         {
@@ -199,21 +238,21 @@ public class UserData
 
     public void UpdateTotalCoins(int gotCoins)
     {
-        this.statistics.TotalCoins += gotCoins;
+        this.statistics.totalCoins += gotCoins;
     }
 
     public void UpdateCoinsRaiting()
     {
-        this.statistics.CoinsRating = this.statistics.TotalCoins / this.tryCounter;
+        this.statistics.coinsRating = this.statistics.totalCoins / this.tryCounter;
     }
 
     public void UpdateTotalDistance(int newDist)
     {
-        this.statistics.TotalDistance += newDist;
+        this.statistics.totalDistance += newDist;
     }
 
     public void UpdateDistanceRaiting()
     {
-        this.statistics.DistanceRating = this.statistics.TotalDistance / this.tryCounter;
+        this.statistics.distanceRating = this.statistics.totalDistance / this.tryCounter;
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Networking;
+using Newtonsoft.Json;
 
 public class Login : MonoBehaviour
 {
@@ -35,9 +36,10 @@ public class Login : MonoBehaviour
         if (request.result == UnityWebRequest.Result.Success)
         {
             string responseJson = request.downloadHandler.text;
-            UserData user = new UserData(JsonUtility.FromJson<UserData>(responseJson));
-            Debug.Log("Got User ID :" + user.Username);
-            Debug.Log("Statistics ID : " + user.Statistics.Id);
+            //UserData user = new UserData(JsonUtility.FromJson<UserData>(responseJson));
+            UserData user = JsonConvert.DeserializeObject<UserData>(responseJson);
+            Debug.Log("Got User ID :" + user.username);
+            Debug.Log("Statistics ID : " + user.statistics.id);
 
             UserAccess.instance.user = user;
             menu.CloseConnection();

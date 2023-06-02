@@ -3,23 +3,29 @@
 [System.Serializable]
 public class GrindData
 {
-    public long id;
-    public int success_points;
+    public long _id;
+    public int _success_points;
 
     public GrindData()
     {
-        this.success_points = 0;
+        this._success_points = 0;
     }
 
-    public long Id
+    public GrindData(GrindData grind)
     {
-        get => id;
-        set => id = value;
+        this.id = grind.id;
+        this.successPoints = grind.successPoints;
     }
 
-    public int SuccessPoints
+    public long id
     {
-        get => success_points;
-        set => success_points = value;
+        get => _id;
+        set => _id = value;
+    }
+
+    public int successPoints
+    {
+        get => _success_points;
+        set => _success_points = value;
     }
 }

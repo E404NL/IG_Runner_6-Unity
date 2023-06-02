@@ -82,8 +82,8 @@ public class PlayerMovement : MonoBehaviour
         isGrounded = false;
         alive = false;
         anim.SetTrigger("Death");     //animation mort
-        UserAccess.instance.user.TryCounter += 1;
-        UserAccess.instance.user.Statistics.TotalDistance += distance;
+        UserAccess.instance.user.tryCounter += 1;
+        UserAccess.instance.user.statistics.totalDistance += distance;
         //Invoke("Restart", 2);
     }
 

@@ -3,85 +3,85 @@
 [System.Serializable]
 public class StatisticsData
 {
-    private long id;
-    private int totalCoins;
-    private int actualCoins;
-    private float coinsRating;
-    private int totalDistance;
-    private float distanceRating;
+    private long _id;
+    private int _totalCoins;
+    private int _actualCoins;
+    private float _coinsRating;
+    private int _totalDistance;
+    private float _distanceRating;
 
     public StatisticsData()
     {
-        this.totalCoins = 0;
-        this.actualCoins = 0;
-        this.coinsRating = 0;
-        this.totalDistance = 0;
-        this.distanceRating = 0;
+        this._totalCoins = 0;
+        this._actualCoins = 0;
+        this._coinsRating = 0;
+        this._totalDistance = 0;
+        this._distanceRating = 0;
     }
 
     public StatisticsData(StatisticsData stats)
     {
-        this.Id = stats.Id;
-        this.TotalCoins = stats.TotalCoins;
-        this.ActualCoins = stats.ActualCoins;
-        this.CoinsRating = stats.CoinsRating;
-        this.TotalDistance = stats.TotalDistance;
-        this.DistanceRating = stats.DistanceRating;
+        this.id = stats.id;
+        this.totalCoins = stats.totalCoins;
+        this.actualCoins = stats.actualCoins;
+        this.coinsRating = stats.coinsRating;
+        this.totalDistance = stats.totalDistance;
+        this.distanceRating = stats.distanceRating;
     }
 
-    public long Id
+    public long id
     {
-        get => id;
-        set => id = value;
+        get => _id;
+        set => _id = value;
     }
 
-    public int TotalCoins
+    public int totalCoins
     {
-        get => totalCoins;
-        set => totalCoins = value;
+        get => _totalCoins;
+        set => _totalCoins = value;
     }
 
-    public int ActualCoins
+    public int actualCoins
     {
-        get => actualCoins;
-        set => actualCoins = value;
+        get => _actualCoins;
+        set => _actualCoins = value;
     }
 
-    public float CoinsRating
+    public float coinsRating
     {
-        get => coinsRating;
-        set => coinsRating = value;
+        get => _coinsRating;
+        set => _coinsRating = value;
     }
 
-    public int TotalDistance
+    public int totalDistance
     {
-        get => totalDistance;
-        set => totalDistance = value;
+        get => _totalDistance;
+        set => _totalDistance = value;
     }
 
-    public float DistanceRating
+    public float distanceRating
     {
-        get => distanceRating;
-        set => distanceRating = value;
+        get => _distanceRating;
+        set => _distanceRating = value;
     }
 
     public void UpdateTotalCoins(int gotCoins)
     {
-        this.totalCoins += gotCoins;
+        this._totalCoins += gotCoins;
     }
 
     public void UpdateCoinsRaiting(int counter)
     {
-        this.coinsRating = this.totalCoins / counter;
+        this._coinsRating = this._totalCoins / counter;
     }
 
     public void UpdateTotalDistance(int newDist)
     {
-        this.totalDistance += newDist;
+        this._totalDistance += newDist;
     }
 
     public void UpdateDistanceRaiting(int counter)
     {
-        this.distanceRating = this.totalDistance / counter;
+        this._distanceRating = this._totalDistance / counter;
     }
 }
