@@ -21,4 +21,9 @@ public class UserAccess : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
     }
+
+    private void disconnect()
+    {
+        Destroy(instance);
+    }
 }

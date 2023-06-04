@@ -3,20 +3,21 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    public string LevelToLoad;  //nom de la sc�ne de jeu
+    public string LevelToLoad;
     public bool connected = false;  //connecté ? Non connecté par défaut;
 
-    public GameObject settingsWindow;   //fenetre des options
-    public GameObject creditsWindow;    //fenetre des credits
-    public GameObject tutorialWindow;   //fenetre du tutoriel
-    public GameObject connectionWindow;  //fenetre de connexion
-    public GameObject signUpWindow;     //fenetre de creation de compte
+    public GameObject settingsWindow;
+    public GameObject creditsWindow;
+    public GameObject tutorialWindow;
+    public GameObject connectionWindow;
+    public GameObject signUpWindow;
+    public GameObject statisticsWindow;
 
-    public GameObject playButton;       //game launch button
-    public GameObject signInButton;     //sign in button
-    public GameObject signUpButton;     //sign up button
-    public GameObject disconnectButton; //disconnect button
-
+    public GameObject playButton;
+    public GameObject signInButton;
+    public GameObject signUpButton;
+    public GameObject disconnectButton;
+    public GameObject statisticsButton;
     private void Start()
     {
 
@@ -30,6 +31,7 @@ public class MainMenu : MonoBehaviour
             signInButton.SetActive(true);
             signUpButton.SetActive(true);
             disconnectButton.SetActive(false);
+            statisticsButton.SetActive(false);
         }
         else
         {
@@ -37,6 +39,7 @@ public class MainMenu : MonoBehaviour
             signInButton.SetActive(false);
             signUpButton.SetActive(false);
             disconnectButton.SetActive(true);
+            statisticsButton.SetActive(true);
         }
     }
 
@@ -101,8 +104,19 @@ public class MainMenu : MonoBehaviour
         signUpWindow.SetActive(false);
     }
 
+    public void Statistics()
+    {
+        statisticsWindow.SetActive(true);
+    }
+
+    public void CloseStatistics()
+    {
+        statisticsWindow.SetActive(false);
+    }
+
     public void DisconnectionButton()
     {
+        UserAccess.instance.user = null;
         this.connected = false;
     }
 }

@@ -18,7 +18,6 @@ public class CreateAccount : MonoBehaviour
     public InputField nameField;
     public InputField firstnameField;
     public InputField ageField;
-    public InputField genreField;
     public InputField codePostalField;
     public Image usernameFieldImage;
     public Image passwordFieldImage;
@@ -36,7 +35,11 @@ public class CreateAccount : MonoBehaviour
     public Toggle Female;
     public Toggle Other;
     public Button SignUp;
+    public MainMenu menu;
+    public GetStatistics stats;
+
     private Dictionary<string,bool> isgoods = new Dictionary<string,bool>();
+    private string genre = "";
     
 
     private const string serverURL = "http://localhost:8080/ws/users";
@@ -47,23 +50,25 @@ public class CreateAccount : MonoBehaviour
         isgoods["Password"] = false;    //false
         isgoods["PasswordConfirmation"] = false;
         isgoods["Email"] = false;
-        isgoods["Name"] = false;    //false
-        isgoods["FirstName"] = false;   //false 
+        isgoods["Name"] = false;
+        isgoods["FirstName"] = false;
         isgoods["Age"] = false;
         isgoods["Genre"] = false;
         isgoods["PostalCode"] = false;
 
         emailField.onEndEdit.AddListener(CheckEmailAvailability);
         passwordField.contentType = InputField.ContentType.Password;
-        passwordField.onValueChanged.AddListener(verifyPasswordLevel);
+        passwordField.onValueChange.AddListener(verifyPasswordLevel);
         passwordConfirmationField.contentType = InputField.ContentType.Password;
-        usernameField.onEndEdit.AddListener(CheckUsernameAvailability);
         passwordConfirmationField.onEndEdit.AddListener(verifySamePassWord);
-        codePostalField.onEndEdit.AddListener(checkPostalCode);
+        usernameField.onEndEdit.AddListener(CheckUsernameAvailability);
+        codePostalField.onValueChanged.AddListener(checkPostalCode);
         ageField.onEndEdit.AddListener(checkAge);
         Male.onValueChanged.AddListener(checkGenre);
         Female.onValueChanged.AddListener(checkGenre);
         Other.onValueChanged.AddListener(checkGenre);
+        nameField.onEndEdit.AddListener(checkName);
+        firstnameField.onEndEdit.AddListener(checkFirstName);
     }
 
     private void Update()
@@ -82,6 +87,8 @@ public class CreateAccount : MonoBehaviour
         Male.onValueChanged.RemoveListener(checkGenre);
         Female.onValueChanged.RemoveListener(checkGenre);
         Other.onValueChanged.RemoveListener(checkGenre);
+        nameField.onEndEdit.RemoveListener(checkName);
+        firstnameField.onEndEdit.RemoveListener(checkFirstName);
     }
 
 
@@ -90,7 +97,6 @@ public class CreateAccount : MonoBehaviour
         if(passwordField.text == passwordConfirmationField.text)
         {
             passwordConfirmationImage.color = Color.white;
-            passwordFieldImage.color = Color.white;
             PasswordConfirmationText.text = "";
             isgoods["PasswordConfirmation"] = true;
             PrintIsGood();
@@ -98,7 +104,6 @@ public class CreateAccount : MonoBehaviour
         else
         {
             passwordConfirmationImage.color = Color.red;
-            passwordFieldImage.color = Color.red;
             PasswordConfirmationText.text = "Mot de passe différent !"; 
             isgoods["PasswordConfirmation"] = false;
             PrintIsGood();
@@ -107,20 +112,25 @@ public class CreateAccount : MonoBehaviour
 
     public void verifyPasswordLevel(string password)
     {
-        Regex regex = new Regex("/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/");
-        if (regex.IsMatch(passwordField.text))
+
+        Regex hasNumber = new Regex(@"[0-9]+");
+        Regex hasUpperChar = new Regex(@"[A-Z]+");
+        Regex hasMinimum8Chars = new Regex(@".{8,}");
+        if(hasNumber.IsMatch(passwordField.text) && hasUpperChar.IsMatch(passwordField.text) && hasMinimum8Chars.IsMatch(passwordField.text))
         {
+            Debug.Log("Match !");
             passwordFieldImage.color = Color.white;
             PasswordText.text = "";
             isgoods["Password"] = true;
-            PrintIsGood();
+            //PrintIsGood();
         }
         else
         {
-            passwordFieldImage.color = Color.red;
+            Debug.Log("Pas match !");
             PasswordText.text = "Mot de passe faible : nécessite 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial !";
             isgoods["Password"] = false;
-            PrintIsGood();
+            passwordFieldImage.color = Color.red;
+            //PrintIsGood();
         }
     }
 
@@ -144,7 +154,7 @@ public class CreateAccount : MonoBehaviour
 
     public void checkName(string name)
     {
-        Regex regex = new Regex("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-\\s'][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
+        Regex regex = new Regex("^[A-Z][a-zA-Z]*$");
         if (regex.IsMatch(nameField.text))
         {
             isgoods["Name"] = true;
@@ -159,7 +169,7 @@ public class CreateAccount : MonoBehaviour
 
     public void checkFirstName(string firstname)
     {
-        Regex regex = new Regex("^[A-Za-zÀ-ÖØ-öø-ÿ]+(?:[-\\s'][A-Za-zÀ-ÖØ-öø-ÿ]+)*$");
+        Regex regex = new Regex("^[A-Z][a-zA-Z]*$");
         if (regex.IsMatch(nameField.text))
         {
             isgoods["FirstName"] = true;
@@ -204,6 +214,7 @@ public class CreateAccount : MonoBehaviour
         {
             Female.isOn = false;
             Other.isOn = false;
+            genre = "Masculin";
             isgoods["Genre"] = true;
             PrintIsGood();
         }
@@ -211,6 +222,7 @@ public class CreateAccount : MonoBehaviour
         {
             Male.isOn = false;
             Other.isOn = false;
+            genre = "Féminin";
             isgoods["Genre"] = true;
             PrintIsGood();
         }
@@ -218,6 +230,7 @@ public class CreateAccount : MonoBehaviour
         {
             Female.isOn = false;
             Male.isOn = false;
+            genre = "Autre";
             isgoods["Genre"] = true;
             PrintIsGood();
         }
@@ -311,6 +324,7 @@ public class CreateAccount : MonoBehaviour
             {
                 Debug.Log("This email's already free.");
                 emailFieldImage.color = Color.white;
+                EmailText.text = "";
                 isgoods["Email"] = true;
                 PrintIsGood();
             }
@@ -352,7 +366,7 @@ public class CreateAccount : MonoBehaviour
             nameField.text,
             firstnameField.text,
             int.Parse(ageField.text),
-            genreField.text,
+            genre,
             int.Parse(codePostalField.text)
         );
         Debug.Log(user);
@@ -383,6 +397,23 @@ public class CreateAccount : MonoBehaviour
         else
         {
             Debug.Log("Successfull sent request !");
+        }
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string responseJson = request.downloadHandler.text;
+            //UserData user = new UserData(JsonUtility.FromJson<UserData>(responseJson));
+            UserData user = JsonConvert.DeserializeObject<UserData>(responseJson);
+            Debug.Log("Got User ID :" + user.username);
+            Debug.Log("Statistics ID : " + user.statistics.id);
+
+            UserAccess.instance.user = user;
+            menu.CloseSignUp();
+            stats.SetStats();
+            menu.connected = true;
+        }
+        else
+        {
+            Debug.LogError("Error when try to get User : " + request.error);
         }
     }
 }

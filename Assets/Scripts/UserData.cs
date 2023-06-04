@@ -43,6 +43,7 @@ public class UserData
         this.gender = gender;
         this.codePostal = codePostal;
         this.rank = 0;
+        this.tryCounter = 3;
         this.actualSkin = "default";
         this.totalScore = 0;
         this.statistics = new StatisticsData();
@@ -61,6 +62,7 @@ public class UserData
         this.gender = user.gender;
         this.codePostal = user.codePostal;
         this.rank = user.rank;
+        this.tryCounter = user.tryCounter;
         this.actualSkin = user.actualSkin;
         this.totalScore = user.totalScore;
         this.statistics = user.statistics;
@@ -157,38 +159,6 @@ public class UserData
         set => _grind = value;
     }
 
-    public void PostUser()  // A MODIFIER LE user
-    {
-        UserData user = new UserData();
-        const string serverURL = "http://localhost:8080/ws/users";
-        string jsonData = JsonConvert.SerializeObject(user);
-        Debug.Log(jsonData);
-
-        // Création de la requête POST avec le contenu JSON
-        UnityWebRequest request = UnityWebRequest.Post(serverURL, jsonData);
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-
-        var asyncOperation = request.SendWebRequest();
-        asyncOperation.completed += OnPostRequestCompleted;
-    }
-    private void OnPostRequestCompleted(AsyncOperation operation)
-    {
-        UnityWebRequest request = ((UnityWebRequestAsyncOperation)operation).webRequest;
-
-        if (request.result == UnityWebRequest.Result.ProtocolError)
-        {
-            Debug.LogError("Error in request : " + request.error + ".");
-        }
-        else
-        {
-            Debug.Log("Successfull sent request !");
-        }
-    }
-
     public void UpdateUser()
     {
         string url = "http://localhost:8080/ws/users/" + this.id; // URL de l'endpoint pour récupérer un utilisateur par son ID
@@ -212,7 +182,7 @@ public class UserData
         }
         else
         {
-            Debug.LogError("Error when try to get User : " + request.error);
+            Debug.LogError("Error when try to put User : " + request.error);
         }
     }
 
