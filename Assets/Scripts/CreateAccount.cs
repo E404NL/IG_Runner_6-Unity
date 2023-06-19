@@ -47,7 +47,7 @@ public class CreateAccount : MonoBehaviour
     private void Start()
     {
         isgoods["Username"] = false;
-        isgoods["Password"] = false;    //false
+        isgoods["Password"] = false;
         isgoods["PasswordConfirmation"] = false;
         isgoods["Email"] = false;
         isgoods["Name"] = false;
@@ -58,7 +58,7 @@ public class CreateAccount : MonoBehaviour
 
         emailField.onEndEdit.AddListener(CheckEmailAvailability);
         passwordField.contentType = InputField.ContentType.Password;
-        passwordField.onValueChange.AddListener(verifyPasswordLevel);
+        passwordField.onValueChanged.AddListener(verifyPasswordLevel);
         passwordConfirmationField.contentType = InputField.ContentType.Password;
         passwordConfirmationField.onEndEdit.AddListener(verifySamePassWord);
         usernameField.onEndEdit.AddListener(CheckUsernameAvailability);
@@ -136,7 +136,8 @@ public class CreateAccount : MonoBehaviour
 
     public void checkPostalCode(string code)
     {
-        if(codePostalField.text.Length != 5)
+        Regex regex = new Regex(@"^\d{5}$");
+        if (!regex.IsMatch(codePostalField.text))
         {
             codePostalFieldImage.color = Color.red;
             CodePostalText.text = "Merci de mettre un code postal à 5 chiffres !";
@@ -185,7 +186,7 @@ public class CreateAccount : MonoBehaviour
     public void checkAge(string age)
     {
         Regex regex = new Regex("^(1[3-9]|[2-8][0-9]|9[0-9])$");
-        if (regex.IsMatch(ageField.text) && (int.Parse(ageField.text) > 99 || int.Parse(ageField.text) < 13))
+        if (!regex.IsMatch(ageField.text))
         {
             ageFieldImage.color = Color.red;
             AgeText.text = "Merci d'entrer un âge compris entre 13 et 99 ans!";
@@ -337,7 +338,6 @@ public class CreateAccount : MonoBehaviour
 
     public bool CheckIfCanSignUp()
     {
-        bool ok = false;
         foreach (bool value in isgoods.Values)
         {
             if (!value)
@@ -410,6 +410,7 @@ public class CreateAccount : MonoBehaviour
             menu.CloseSignUp();
             stats.SetStats();
             menu.connected = true;
+            menu.AccountConfirmWindow.SetActive(true);
         }
         else
         {

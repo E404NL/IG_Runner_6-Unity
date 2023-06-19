@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
@@ -12,15 +13,35 @@ public class MainMenu : MonoBehaviour
     public GameObject connectionWindow;
     public GameObject signUpWindow;
     public GameObject statisticsWindow;
+    public GameObject EndGameWindow;
+    public GameObject AccountConfirmWindow;
+    public Text HelloText;
 
     public GameObject playButton;
     public GameObject signInButton;
     public GameObject signUpButton;
     public GameObject disconnectButton;
     public GameObject statisticsButton;
+
+    public GetStatistics stats;
+
     private void Start()
     {
-
+        if(UserAccess.instance.user.name != null)
+        {
+            HelloText.text = "Salut " + UserAccess.instance.user.username + " !";
+            HelloText.enabled = true;
+            connected = true;
+            Debug.Log(UserAccess.instance.user.username + " : " + UserAccess.instance.user.totalScore);
+            //UserAccess.instance.user.GetStatisticsUser();
+            //UserAccess.instance.user.GetUserById(UserAccess.instance.user.id);
+            stats.SetStats();
+        }
+        else
+        {
+            HelloText.enabled = false;
+            connected = false;
+        }
     }
 
     private void Update()
@@ -33,6 +54,14 @@ public class MainMenu : MonoBehaviour
             disconnectButton.SetActive(false);
             statisticsButton.SetActive(false);
         }
+        else if(connected && UserAccess.instance.user.tryCounter >= 3)
+        {
+            EndGameWindow.SetActive(true);
+            signInButton.SetActive(false);
+            signUpButton.SetActive(false);
+            disconnectButton.SetActive(true);
+            statisticsButton.SetActive(true);
+        }
         else
         {
             playButton.SetActive(true);
@@ -40,6 +69,7 @@ public class MainMenu : MonoBehaviour
             signUpButton.SetActive(false);
             disconnectButton.SetActive(true);
             statisticsButton.SetActive(true);
+            EndGameWindow.SetActive(false);
         }
     }
 
@@ -118,5 +148,10 @@ public class MainMenu : MonoBehaviour
     {
         UserAccess.instance.user = null;
         this.connected = false;
+    }
+
+    public void CloseAccountConfirmWindow()
+    {
+        AccountConfirmWindow.SetActive(false);
     }
 }

@@ -48,6 +48,10 @@ public class PlayerMovement : MonoBehaviour
         Vector3 horizontalMove = transform.right * horizontalInput * speed * Time.fixedDeltaTime * horizontalMultiplier;
         rb.MovePosition(rb.position + forwardMove + horizontalMove);
         distance = (int) transform.position.z;
+        if(distance > GameManager.inst.distance)
+        {
+            GameManager.inst.IncrementDistance();
+        }
     }
 
     void Update()
@@ -83,7 +87,12 @@ public class PlayerMovement : MonoBehaviour
         alive = false;
         anim.SetTrigger("Death");     //animation mort
         UserAccess.instance.user.tryCounter += 1;
-        UserAccess.instance.user.statistics.totalDistance += distance;
+        UserAccess.instance.user.UpdateCoinsRaiting();
+        UserAccess.instance.user.UpdateTotalDistance(GameManager.inst.distance);
+        UserAccess.instance.user.UpdateDistanceRaiting();
+        UserAccess.instance.user.UpdateTotalScore();
+        UserAccess.instance.user.PutStatisticsUser();
+        UserAccess.instance.user.PutUser();
         //Invoke("Restart", 2);
     }
 

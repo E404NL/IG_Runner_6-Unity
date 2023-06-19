@@ -24,6 +24,7 @@ public class Coin : MonoBehaviour
         }
 
         GameManager.inst.IncrementScore();
+        UserAccess.instance.user.statistics.totalCoins++;
     }
 
     // Start is called before the first frame update
