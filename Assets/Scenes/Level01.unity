@@ -1336,6 +1336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameOverUI: {fileID: 657532230}
+  RetryButton: {fileID: 980443623}
 --- !u!1 &1345835455
 GameObject:
   m_ObjectHideFlags: 0
@@ -1654,6 +1655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameOverUI: {fileID: 657532230}
+  RetryButton: {fileID: 0}
 --- !u!1 &1924573936
 GameObject:
   m_ObjectHideFlags: 0

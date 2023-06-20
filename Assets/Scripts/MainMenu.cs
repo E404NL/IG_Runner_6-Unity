@@ -15,6 +15,7 @@ public class MainMenu : MonoBehaviour
     public GameObject statisticsWindow;
     public GameObject EndGameWindow;
     public GameObject AccountConfirmWindow;
+    public GameObject RecordWindow;
     public Text HelloText;
 
     public GameObject playButton;
@@ -22,6 +23,7 @@ public class MainMenu : MonoBehaviour
     public GameObject signUpButton;
     public GameObject disconnectButton;
     public GameObject statisticsButton;
+    public GameObject recordButton;
 
     public GetStatistics stats;
 
@@ -32,10 +34,6 @@ public class MainMenu : MonoBehaviour
             HelloText.text = "Salut " + UserAccess.instance.user.username + " !";
             HelloText.enabled = true;
             connected = true;
-            Debug.Log(UserAccess.instance.user.username + " : " + UserAccess.instance.user.totalScore);
-            //UserAccess.instance.user.GetStatisticsUser();
-            //UserAccess.instance.user.GetUserById(UserAccess.instance.user.id);
-            stats.SetStats();
         }
         else
         {
@@ -53,6 +51,7 @@ public class MainMenu : MonoBehaviour
             signUpButton.SetActive(true);
             disconnectButton.SetActive(false);
             statisticsButton.SetActive(false);
+            recordButton.SetActive(false);
         }
         else if(connected && UserAccess.instance.user.tryCounter >= 3)
         {
@@ -61,6 +60,7 @@ public class MainMenu : MonoBehaviour
             signUpButton.SetActive(false);
             disconnectButton.SetActive(true);
             statisticsButton.SetActive(true);
+            //recordButton.SetActive(true);
         }
         else
         {
@@ -70,6 +70,7 @@ public class MainMenu : MonoBehaviour
             disconnectButton.SetActive(true);
             statisticsButton.SetActive(true);
             EndGameWindow.SetActive(false);
+            //recordButton.SetActive(true);
         }
     }
 
@@ -153,5 +154,15 @@ public class MainMenu : MonoBehaviour
     public void CloseAccountConfirmWindow()
     {
         AccountConfirmWindow.SetActive(false);
+    }
+
+    public void Records()
+    {
+        RecordWindow.SetActive(true);
+    }
+
+    public void CloseRecords()
+    {
+        RecordWindow.SetActive(false);
     }
 }

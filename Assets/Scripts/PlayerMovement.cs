@@ -82,16 +82,19 @@ public class PlayerMovement : MonoBehaviour
 
     public void Die()
     {
+        UserAccess.instance.user.tryCounter ++;
+        if (UserAccess.instance.user.tryCounter >= 3)
+        {
+            GameOverManager.instance.RetryButton.interactable = false;
+        }
         GameOverManager.instance.OnPlayerDeath();
         isGrounded = false;
         alive = false;
         anim.SetTrigger("Death");     //animation mort
-        UserAccess.instance.user.tryCounter += 1;
         UserAccess.instance.user.UpdateCoinsRaiting();
         UserAccess.instance.user.UpdateTotalDistance(GameManager.inst.distance);
         UserAccess.instance.user.UpdateDistanceRaiting();
         UserAccess.instance.user.UpdateTotalScore();
-        UserAccess.instance.user.PutStatisticsUser();
         UserAccess.instance.user.PutUser();
         //Invoke("Restart", 2);
     }

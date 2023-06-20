@@ -18,7 +18,7 @@ public class GetStatistics : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        this.SetStats();
     }
 
     // Update is called once per frame

@@ -182,11 +182,9 @@ public class UserData
         if (request.result == UnityWebRequest.Result.Success)
         {
             string responseJson = request.downloadHandler.text;
-            string json = JsonUtility.ToJson(this);
-            Debug.Log("Put User :" + this.username);
             UserData user = JsonConvert.DeserializeObject<UserData>(responseJson);
-            Debug.Log("Got User ID :" + user.username);
-            Debug.Log("Statistics ID : " + user.statistics.id);
+            Debug.Log("Put User ID :" + user.username);
+            Debug.Log("JSON User : " + responseJson);
 
             UserAccess.instance.user = user;
         }
@@ -195,100 +193,7 @@ public class UserData
             Debug.LogError("Error when try to put User : " + request.error);
         }
     }
-    public void GetUserById(long userId)
-    {
-        string url = "http://localhost:8080/ws/users/" + userId + "/getStats";
-        string jsonData = JsonConvert.SerializeObject(this.statistics);
-        Debug.Log(jsonData);
 
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        var asyncOperation = request.SendWebRequest();
-        asyncOperation.completed += OnRequestGetUser;
-    }
-
-    public void OnRequestGetUser(AsyncOperation operation)
-    {
-        UnityWebRequest request = ((UnityWebRequestAsyncOperation)operation).webRequest;
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            string responseJson = request.downloadHandler.text;
-            UserData user = JsonConvert.DeserializeObject<UserData>(responseJson);
-            Debug.Log("Got Stats ID :" + user.username);
-
-            UserAccess.instance.user = user;
-        }
-        else
-        {
-            Debug.LogError("Error when try to put Statistics : " + request.error);
-        }
-    }
-
-
-    public void PutStatisticsUser()
-    {
-        string url = "http://localhost:8080/ws/users/" + this.id + "/putStats";
-        string jsonData = JsonConvert.SerializeObject(this.statistics);
-        Debug.Log(jsonData);
-
-        UnityWebRequest request = UnityWebRequest.Put(url, jsonData);
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        var asyncOperation = request.SendWebRequest();
-        asyncOperation.completed += OnRequestPutStats;
-    }
-
-    public void OnRequestPutStats(AsyncOperation operation)
-    {
-        UnityWebRequest request = ((UnityWebRequestAsyncOperation)operation).webRequest;
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            string responseJson = request.downloadHandler.text;
-            string json = JsonUtility.ToJson(this);
-            Debug.Log("Put User :" + this.username);
-            StatisticsData stat = JsonConvert.DeserializeObject<StatisticsData>(responseJson);
-            Debug.Log("Got Stats ID :" + stat.id);
-
-            UserAccess.instance.user.statistics = stat;
-        }
-        else
-        {
-            Debug.LogError("Error when try to put Statistics : " + request.error);
-        }
-    }
-
-    public void GetStatisticsUser()
-    {
-        string url = "http://localhost:8080/ws/users/" + this.id + "/getStats";
-        string jsonData = JsonConvert.SerializeObject(this.statistics);
-        Debug.Log(jsonData);
-
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        var asyncOperation = request.SendWebRequest();
-        asyncOperation.completed += OnRequestGetStats;
-    }
-
-    public void OnRequestGetStats(AsyncOperation operation)
-    {
-        UnityWebRequest request = ((UnityWebRequestAsyncOperation)operation).webRequest;
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            string responseJson = request.downloadHandler.text;
-            StatisticsData stat = JsonConvert.DeserializeObject<StatisticsData>(responseJson);
-            Debug.Log("Got Stats ID :" + stat.id);
-
-            UserAccess.instance.user.statistics = stat;
-        }
-        else
-        {
-            Debug.LogError("Error when try to put Statistics : " + request.error);
-        }
-    }
 
     public void UpdateTotalScore()
     {

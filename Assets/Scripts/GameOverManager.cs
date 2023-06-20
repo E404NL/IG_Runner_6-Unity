@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameOverManager : MonoBehaviour
 {
 
     public GameObject gameOverUI;   //GameOverMenu
     public static GameOverManager instance; //instance
+    public Button RetryButton;
 
     private void Awake()
     {
@@ -14,7 +16,6 @@ public class GameOverManager : MonoBehaviour
             Debug.LogWarning("Il y a plus d'une instance de GameOverManager dans la scene");
             return;
         }
-
         instance = this;
     }
 
