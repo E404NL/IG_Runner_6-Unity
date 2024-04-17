@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public float speed= 5;                      //player speed
     [SerializeField] Rigidbody rb;              //Rigidbody (player)
     public float speedIncreasePerPoint;         //Valeur de l'accélération
+    int distance = 0;
 
     [SerializeField] float jumpForce = 400f;    //force de saut
     [SerializeField] LayerMask groundMask;      //
@@ -46,9 +47,13 @@ public class PlayerMovement : MonoBehaviour
         Vector3 forwardMove = transform.forward * speed * Time.fixedDeltaTime;
         Vector3 horizontalMove = transform.right * horizontalInput * speed * Time.fixedDeltaTime * horizontalMultiplier;
         rb.MovePosition(rb.position + forwardMove + horizontalMove);
+        distance = (int) transform.position.z;
+        if(distance > GameManager.inst.distance)
+        {
+            GameManager.inst.IncrementDistance();
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -71,25 +76,35 @@ public class PlayerMovement : MonoBehaviour
 
         if (transform.position.y < -5) //Si le player tombe dans le vide (au cas où)
         {
-            Die(); //BéIléMort CHEH
+            Die();
         }
     }
 
-    public void Die() //bah il est plus alive quoi
+    public void Die()
     {
+        UserAccess.instance.user.tryCounter ++;
+        if (UserAccess.instance.user.tryCounter >= 3)
+        {
+            GameOverManager.instance.RetryButton.interactable = false;
+        }
         GameOverManager.instance.OnPlayerDeath();
         isGrounded = false;
         alive = false;
-        anim.SetTrigger("Death");   //animation wallah té mor
-        //Invoke("Restart", 2);       //Invoque la méthode Restart
+        anim.SetTrigger("Death");     //animation mort
+        UserAccess.instance.user.UpdateCoinsRaiting();
+        UserAccess.instance.user.UpdateTotalDistance(GameManager.inst.distance);
+        UserAccess.instance.user.UpdateDistanceRaiting();
+        UserAccess.instance.user.UpdateTotalScore();
+        UserAccess.instance.user.PutUser();
+        //Invoke("Restart", 2);
     }
 
-    void Restart()  //recommencer la partie
+    void Restart()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); //rechargement de la scène
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    void Jump() //sauter
+    void Jump()
     {
         if(isGrounded == true)  //si on est au sol, on peut sauter
         {
